@@ -18,16 +18,16 @@ join_lookup_func <- function(data_df, lookup_df, field_name) {
     rename_(.dots = setNames("label", field_name))
 }
 
-police_force_lookup <- read_csv("full_data/lookup/Police_Force.csv")
-accident_severity_lookup <- read_csv("full_data/lookup/Accident_Severity.csv")
-road_type_lookup <- read_csv("full_data/lookup/Road_Type.csv")
-light_conditions_lookup <- read_csv("full_data/lookup/Light_Conditions.csv")
-urban_rural_lookup <- read_csv("full_data/lookup/Urban_Rural.csv")
-police_attended_lookup <- read_csv("full_data/lookup/Police_Officer_Attend.csv")
+police_force_lookup <- read_csv("data_prep/full_data/lookup/Police_Force.csv")
+accident_severity_lookup <- read_csv("data_prep/full_data/lookup/Accident_Severity.csv")
+road_type_lookup <- read_csv("data_prep/full_data/lookup/Road_Type.csv")
+light_conditions_lookup <- read_csv("data_prep/full_data/lookup/Light_Conditions.csv")
+urban_rural_lookup <- read_csv("data_prep/full_data/lookup/Urban_Rural.csv")
+police_attended_lookup <- read_csv("data_prep/full_data/lookup/Police_Officer_Attend.csv")
 
-accidents_full <- read_csv("full_data/Accidents0515.csv")
-# casualties_full <- read_csv("full_data/Casualties0515.csv")
-# vehicles_full <- read_csv("full_data/Vehicles0515.csv")
+accidents_full <- read_csv("data_prep/full_data/Accidents0515.csv")
+# casualties_full <- read_csv("data_prep/full_data/Casualties0515.csv")
+# vehicles_full <- read_csv("data_prep/full_data/Vehicles0515.csv")
 
 accidents_sampled <- accidents_full %>% sample_n(size = 10000)
 # casualties_sampled <- casualties_full %>% inner_join(accidents_sampled, by = c("Accident_Index"))
@@ -81,14 +81,33 @@ accidents_processed <- accidents_sampled %>%
     .$weather_conditions %in% c(7, 8, 9) ~ "Fog",
     TRUE ~ NA_character_
   )) %>% 
-  mutate(weekday = as.character(wday(dmy(date), label = TRUE, abbr = FALSE)),
+  mutate(year = year(dmy(date)),
+         weekday = as.character(wday(dmy(date), label = TRUE, abbr = FALSE)),
          hour = hour(time)) %>% 
   mutate(accident_damages = case_when(
-    .$accident_severity == "Slight" ~ runif(n(), min = 1, max = 1000),
-    .$accident_severity == "Serious" ~ runif(n(), min = 1001, max = 10000),
-    .$accident_severity == "Fatal" ~ runif(n(), min = 10001, max = 100000)
-  ) * num_casualties) %>% 
-  select(-time) %>% 
+    .$accident_severity == "Slight" ~ sample(x = 1:1000, size = n(), replace = TRUE),
+    .$accident_severity == "Serious" ~ sample(x = 1001:10000, size = n(), replace = TRUE),
+    .$accident_severity == "Fatal" ~ sample(x = 10001:100000, size = n(), replace = TRUE)
+  ) * 0.5 * (num_casualties + num_vehicles)) %>% 
+  select(accident_id,
+         num_vehicles,
+         num_casualties,
+         accident_severity,
+         accident_damages,
+         police_department,
+         police_attended,
+         urban_vs_rural,
+         road_type,
+         road_conditions,
+         weather_conditions,
+         light_conditions,
+         date,
+         year,
+         weekday,
+         hour,
+         longitude,
+         latitude
+         ) %>% 
   as.data.frame()
 
-write_rds(accidents_processed, "processed_data/accidents_processed.rds", compress = "bz2")
+write_rds(accidents_processed, "data_prep/processed_data/accidents_processed.rds", compress = "bz2")
