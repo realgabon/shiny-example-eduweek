@@ -7,6 +7,7 @@ library(dplyr)
 library(ggplot2)
 library(leaflet)
 library(stringr)
+library(lubridate)
 
 join_lookup_func <- function(data_df, lookup_df, field_name) {
   select_fields <- setdiff(c(colnames(data_df), "label"), field_name)
@@ -25,12 +26,12 @@ urban_rural_lookup <- read_csv("full_data/lookup/Urban_Rural.csv")
 police_attended_lookup <- read_csv("full_data/lookup/Police_Officer_Attend.csv")
 
 accidents_full <- read_csv("full_data/Accidents0515.csv")
-casualties_full <- read_csv("full_data/Casualties0515.csv")
-vehicles_full <- read_csv("full_data/Vehicles0515.csv")
+# casualties_full <- read_csv("full_data/Casualties0515.csv")
+# vehicles_full <- read_csv("full_data/Vehicles0515.csv")
 
-accidents_sampled <- accidents_full %>% sample_frac(size = 0.01)
-casualties_sampled <- casualties_full %>% inner_join(accidents_sampled, by = c("Accident_Index"))
-vehicles_sampled <- vehicles_full %>% inner_join(accidents_sampled, by = c("Accident_Index"))
+accidents_sampled <- accidents_full %>% sample_n(size = 10000)
+# casualties_sampled <- casualties_full %>% inner_join(accidents_sampled, by = c("Accident_Index"))
+# vehicles_sampled <- vehicles_full %>% inner_join(accidents_sampled, by = c("Accident_Index"))
 
 accidents_processed <- accidents_sampled %>% 
   select(accident_id = Accident_Index,
@@ -64,11 +65,30 @@ accidents_processed <- accidents_sampled %>%
     str_detect(str_to_lower(.$light_conditions), "daylight") ~ "Daylight",
     str_detect(str_to_lower(.$light_conditions), "darkness") ~ "Darkness",
     TRUE ~ NA_character_
+  )) %>%
+  mutate(road_conditions = case_when(
+    .$road_conditions == 1 ~ "Dry",
+    .$road_conditions == 2 ~ "Wet",
+    .$road_conditions == 3 ~ "Snow",
+    .$road_conditions == 4 ~ "Ice",
+    .$road_conditions == 5 ~ "Flood",
+    TRUE ~ NA_character_
   )) %>% 
+  mutate(weather_conditions = case_when(
+    .$weather_conditions %in% c(1, 4) ~ "Fine",
+    .$weather_conditions %in% c(2, 5) ~ "Raining",
+    .$weather_conditions %in% c(3, 6) ~ "Snowing",
+    .$weather_conditions %in% c(7, 8, 9) ~ "Fog",
+    TRUE ~ NA_character_
+  )) %>% 
+  mutate(weekday = as.character(wday(dmy(date), label = TRUE, abbr = FALSE)),
+         hour = hour(time)) %>% 
   mutate(accident_damages = case_when(
     .$accident_severity == "Slight" ~ runif(n(), min = 1, max = 1000),
     .$accident_severity == "Serious" ~ runif(n(), min = 1001, max = 10000),
     .$accident_severity == "Fatal" ~ runif(n(), min = 10001, max = 100000)
-  ) * num_casualties)
+  ) * num_casualties) %>% 
+  select(-time) %>% 
+  as.data.frame()
 
 write_rds(accidents_processed, "processed_data/accidents_processed.rds", compress = "bz2")
