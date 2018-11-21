@@ -55,7 +55,19 @@ accidents_processed <- accidents_sampled %>%
   join_lookup_func(road_type_lookup, "road_type") %>% 
   join_lookup_func(light_conditions_lookup, "light_conditions") %>% 
   join_lookup_func(urban_rural_lookup, "urban_vs_rural") %>% 
-  join_lookup_func(police_attended_lookup, "police_attended") %>% 
+  join_lookup_func(police_attended_lookup, "police_attended") %>%
+  mutate(num_vehicles = case_when(
+    .$num_vehicles == 1 ~ "1",
+    .$num_vehicles == 2 ~ "2",
+    .$num_vehicles >= 3 ~ "3+",
+    TRUE ~ NA_character_
+  )) %>% 
+  mutate(num_casualties = case_when(
+    .$num_casualties == 1 ~ "1",
+    .$num_casualties == 2 ~ "2",
+    .$num_casualties >= 3 ~ "3+",
+    TRUE ~ NA_character_
+  )) %>% 
   mutate(police_attended = case_when(
     str_detect(str_to_lower(.$police_attended), "yes") ~ "Yes",
     str_detect(str_to_lower(.$police_attended), "no") ~ "No",
