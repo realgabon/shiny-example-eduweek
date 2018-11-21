@@ -13,14 +13,37 @@ server <- function(input, output) {
     accident_data
   })
   
+
+  col_names <- reactive({
+    
+    filtered_data() %>% select(
+      weekday,
+      road_type
+    ) %>% names
+  })
+  
+   
+ # })
+  
+  output$grouping_var <- renderUI({
+    
+    selectInput("grouping_var", label = h3("Select Groups to plot"), 
+                choices = col_names())
+    
+  })
+  
   data_filtered_grouped <- reactive({
 
-    group_column_text <- input$dummy_grouping_field
-    group_column_expr <- parse_expr(group_column_text)
+    #group_column_text <- input$dummy_grouping_field
+    #group_column_expr <- parse_expr(group_column_text)
+      
+    var_enq <- rlang::sym(as_string(input$grouping_var))
+    
+    tmp <- filtered_data() %>% 
+ 
+      group_by(!!var_enq) %>%
+      summarize(countx = n(), avg = mean(accident_damages))
 
-    filtered_data() %>%
-      group_by(!!grouping_column) %>%
-      summarize(count = n(), avg = mean(!!grouping_column))
 
   })
   
@@ -29,8 +52,46 @@ server <- function(input, output) {
       datatable()
   })
 
-  output$plotly_chart <- renderplotly({
-    data_filtered_grouped() %>% nieco_co_vie_len_janka()
+  output$plotly_chart <- renderPlotly({
+    
+    var_enq1 <- rlang::sym(as_string(input$grouping_var))
+    
+    tmp <- filtered_data() %>% 
+      
+      group_by(!!var_enq1) %>%
+      summarize(countx = n(), avg = mean(accident_damages))
+    
+    chart_bl <- plot_ly(tmp,x = ~eval_tidy(var_enq1), y = ~countx, name = 'count', type= 'bar',color = I("#A00606") )%>%
+      add_lines(y = ~avg, name = 'damages',  type= 'line', line = list(color = "#052F66"),yaxis = "y2") %>%
+
+       layout(
+        xaxis = list(
+          title=  input$grouping_var,
+          anchor = "bottom"
+        ),
+        yaxis = list(
+          title=  "damages",
+          side = "left",
+          hoverformat = ',.'
+        ),
+        yaxis2 = list(
+          title=  "count",
+          side = "right",
+          overlaying = "y",
+          tickfont = list(size = 9.5)
+
+        ),
+        title = "WHAT IS THIS?",
+        margin = list(
+          l = 65,
+          r = 65,
+          t = 115,
+          pad = 4
+        ),
+        legend = list(orientation = "h", yanchor = "top", borderwidth = 0,y=-0.75
+
+        ))
+  
   })
   
   output$accident_map <- renderLeaflet({
