@@ -32,22 +32,7 @@ server <- function(input, output) {
   })
   
 
-  col_names <- reactive({
-    
-    filtered_data() %>% select(
-      weekday,
-      road_type
-    ) %>% names
-  })
-  
-   
-  
-  output$grouping_var <- renderUI({
-    
-    selectInput("grouping_var", label = h3("Select Groups to plot"), 
-                choices = col_names())
-    
-  })
+
   
   data_filtered_grouped <- reactive({
 
@@ -63,30 +48,7 @@ server <- function(input, output) {
 
     data
   })
-  # 
-  # data_filtered_grouped <- reactive({
-  # 
-  #   group_column_text <- input$dummy_grouping_field
-  #   group_column_expr <- parse_expr(group_column_text)
-  # 
-  #   filtered_data() %>%
-  #     group_by(!!grouping_column) %>%
-  #     summarize(count = n(), avg = mean(!!grouping_column))
-  # 
-  # })
-  # 
-  # output$data_table_server <- DT::renderDataTable({
-  #   data_filtered_grouped() %>%
-  #     datatable()
-  # })
-  # 
-  # output$plotly_chart <- renderplotly({
-  #   data_filtered_grouped() %>% nieco_co_vie_len_janka()
-  # })
-  
-  output$obraztek <- renderPlot({
-    plot(pressure)
-  })
+
 
   output$plotly_chart <- renderPlotly({
     
@@ -96,33 +58,25 @@ server <- function(input, output) {
       group_by(!!var_enq1) %>%
       summarize(countx = n(), avg = mean(accident_damages))
     
-    chart_bl <- plot_ly(tmp,x = ~eval_tidy(var_enq1), y = ~countx, name = 'count', type= 'bar',color = I("#A00606") )%>%
+    chart_bl <- plot_ly(tmp,x = ~eval_tidy(var_enq1), y = ~countx, name = 'count', type= 'bar',color = I("#A00606")) %>%
       add_lines(y = ~avg, name = 'damages',  type= 'line', line = list(color = "#052F66"),yaxis = "y2") %>%
 
        layout(
         xaxis = list(
-          title=  input$grouping_var,
-          anchor = "bottom"
+          title=  input$grouping_var
         ),
         yaxis = list(
-          title=  "damages",
-          side = "left",
-          hoverformat = ',.'
+          title=  "Count",
+          side = "left"
         ),
         yaxis2 = list(
-          title=  "count",
+          title=  "Damages",
           side = "right",
-          overlaying = "y",
-          tickfont = list(size = 9.5)
+          overlaying = "y"
 
         ),
         title = "WHAT IS THIS?",
-        margin = list(
-          l = 65,
-          r = 65,
-          t = 115,
-          pad = 4
-        ),
+
         legend = list(orientation = "h", yanchor = "top", borderwidth = 0,y=-0.75
 
         ))
