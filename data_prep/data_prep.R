@@ -56,18 +56,6 @@ accidents_processed <- accidents_sampled %>%
   join_lookup_func(light_conditions_lookup, "light_conditions") %>% 
   join_lookup_func(urban_rural_lookup, "urban_vs_rural") %>% 
   join_lookup_func(police_attended_lookup, "police_attended") %>%
-  mutate(num_vehicles = case_when(
-    .$num_vehicles == 1 ~ "1",
-    .$num_vehicles == 2 ~ "2",
-    .$num_vehicles >= 3 ~ "3+",
-    TRUE ~ NA_character_
-  )) %>% 
-  mutate(num_casualties = case_when(
-    .$num_casualties == 1 ~ "1",
-    .$num_casualties == 2 ~ "2",
-    .$num_casualties >= 3 ~ "3+",
-    TRUE ~ NA_character_
-  )) %>% 
   mutate(police_attended = case_when(
     str_detect(str_to_lower(.$police_attended), "yes") ~ "Yes",
     str_detect(str_to_lower(.$police_attended), "no") ~ "No",
@@ -101,6 +89,18 @@ accidents_processed <- accidents_sampled %>%
     .$accident_severity == "Serious" ~ sample(x = 1001:10000, size = n(), replace = TRUE),
     .$accident_severity == "Fatal" ~ sample(x = 10001:100000, size = n(), replace = TRUE)
   ) * 0.5 * (num_casualties + num_vehicles)) %>% 
+  mutate(num_vehicles = case_when(
+    .$num_vehicles == 1 ~ "1",
+    .$num_vehicles == 2 ~ "2",
+    .$num_vehicles >= 3 ~ "3+",
+    TRUE ~ NA_character_
+  )) %>% 
+  mutate(num_casualties = case_when(
+    .$num_casualties == 1 ~ "1",
+    .$num_casualties == 2 ~ "2",
+    .$num_casualties >= 3 ~ "3+",
+    TRUE ~ NA_character_
+  )) %>% 
   select(accident_id,
          num_vehicles,
          num_casualties,
@@ -122,4 +122,4 @@ accidents_processed <- accidents_sampled %>%
          ) %>% 
   as.data.frame()
 
-write_rds(accidents_processed, "data_prep/processed_data/accidents_processed.rds", compress = "bz2")
+write_rds(accidents_processed, "shiny_app/accidents_processed.rds", compress = "bz2")

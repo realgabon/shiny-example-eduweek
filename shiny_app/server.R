@@ -1,17 +1,22 @@
 server <- function(input, output) {
   
-  # filtered_data <- reactive({
-  #   
-  #   # placeholder na filtre
-  #   data <- accident_data
-  # 
-  #   if(!is.null(input$dummy_filter)) {
-  #     data <- data %>% filter(dummy_field %in% input$dummy_filter)
-  #   }
-  #   
-  #   # repeat...
-  #   accident_data
-  # })
+  filtered_data <- reactive({
+    data <- accident_data
+
+    if(!is.null(input$num_casualties)) {
+      data <- data %>% filter(num_casualties %in% input$num_casualties)
+    }
+    
+    if(!is.null(input$accident_severity)) {
+      data <- data %>% filter(accident_severity %in% input$accident_severity)
+    }
+    
+    if(!is.null(input$road_type)) {
+      data <- data %>% filter(road_type %in% input$road_type)
+    }
+
+    data
+  })
   # 
   # data_filtered_grouped <- reactive({
   # 
