@@ -10,10 +10,7 @@ dashboardPage(
         tabName = "filters",
         icon = icon("filter"),
         startExpanded = TRUE,
-        selectInput("num_vehicles", "Number of Vehicles", choices = unique(accident_data$num_vehicles)),
-        selectInput("num_casualties", "Number of Casualties", choices = unique(accident_data$num_casualties)),
         selectInput("accident_severity", "Accident Severity", choices = unique(accident_data$accident_severity)),
-        selectInput("police_department", "Police Department", choices = unique(accident_data$police_department)),
         selectInput("police_attended", "Police Attended", choices = unique(accident_data$police_attended)),
         selectInput("urban_vs_rural", "Urban/Rural", choices = unique(accident_data$urban_vs_rural))
       ),
@@ -29,24 +26,19 @@ dashboardPage(
   ),
   dashboardBody(
     tabItem(tabName = "filters",
-            # fluidRow(
-            #   valueBox(10 * 2, "Killed", icon = icon("male"), width = 4),
-            #   valueBox('15M', "Damaged", icon = icon("usd"), width = 4),
-            #   valueBox(44, "Some Number", icon = icon("address-book"), width = 4)),
             fluidRow(
               column(
-                width = 6,
-                box(title = "Tabulecka este krajsia", status = "primary", width = NULL, DT::dataTableOutput("data_filtered_table"))
+                width = 7,
+                box(title = "Obraztek krasny", status = "primary", width = NULL, plotlyOutput("plotly_chart"))
               ),
               column(
-                width = 6,
-                box(title = "Obraztek krasny", status = "primary", width = NULL, plotlyOutput("plotly_chart"))
-              )
-            ),
+                width = 5,
+                box(title = "Mapka jukej", width = NULL, leafletOutput("accident_map"))
+              )),
             fluidRow(
               column(
                 width = 12,
-                box(title = "Mapka jukej", width = NULL, leafletOutput("accident_map"))
+                box(title = "Tabulecka este krajsia", status = "primary", width = NULL, DT::dataTableOutput("data_filtered_table"))
               )
             )
     )
