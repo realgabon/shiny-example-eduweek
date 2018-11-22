@@ -120,6 +120,8 @@ accidents_processed <- accidents_sampled %>%
          longitude,
          latitude
          ) %>% 
+  filter(complete.cases(.)) %>% 
   as.data.frame()
 
-write_rds(accidents_processed, "shiny_app/accidents_processed.rds", compress = "bz2")
+write_rds(accidents_processed, "shiny_app_final/accidents_processed.rds", compress = "bz2")
+write_rds(accidents_processed, "shiny_app_start/accidents_processed.rds", compress = "bz2")

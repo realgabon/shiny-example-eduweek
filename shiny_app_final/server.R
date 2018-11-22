@@ -19,27 +19,32 @@ server <- function(input, output) {
     
   })
   
-  output$data_filtered_table <- renderDataTable({
- req(input$grouping_var)
-    var_enq1 <- rlang::sym(as_string(input$grouping_var))
+  grouping_var <- reactive({
     
-    tmp <- filtered_data() %>% 
-      group_by(!!var_enq1) %>%
+    sym(as_string(input$grouping_var))
+  
+  })
+  
+  grouped_data <- reactive({
+    
+    filtered_data() %>% 
+      group_by(!!grouping_var()) %>%
       summarize(countx = n(), avg = mean(accident_damages))
+  
+  })
+  
+  
+  output$grouped_table <- renderDataTable({
     
-    datatable(tmp, options = list(dom = 't'), colnames = c('Group Variable', 'Counts', 'Mean'))
-    
+    grouped_data() %>% 
+      datatable(options = list(dom = 't'), colnames = c('Group Variable', 'Counts', 'Mean'))
+  
   })
   
   output$plotly_chart <- renderPlotly({
     
-    var_enq1 <- sym(as_string(input$grouping_var))
-    
-    tmp <- filtered_data() %>% 
-      group_by(!!var_enq1) %>%
-      summarize(countx = n(), avg = mean(accident_damages))
-    
-    chart_bl <- plot_ly(tmp,x = ~eval_tidy(var_enq1), y = ~countx, name = 'count', type= 'bar',color = I("#A00606") )%>%
+    chart_bl <- grouped_data() %>% 
+      plot_ly(x = ~eval_tidy(grouping_var()), y = ~countx, name = 'count', type= 'bar',color = I("#A00606") ) %>%
       add_lines(y = ~avg, name = 'damages',  type= 'line', line = list(color = "#052F66"),yaxis = "y2") %>%
 
        layout(
@@ -72,13 +77,8 @@ server <- function(input, output) {
   })
   
   output$accident_map <- renderLeaflet({
-    
-    grouping_var_text <- input$grouping_var
-    grouping_var <- sym(as_string(grouping_var_text))
-    
     map_data <- filtered_data() %>%
-      select(longitude, latitude, !!grouping_var) %>%
-      filter(complete.cases(longitude, latitude, !!grouping_var))
+      select(longitude, latitude, !!grouping_var())
     
     longitude_center <- mean(map_data[, 1])
     latitude_center <- mean(map_data[, 2]) + 1
@@ -88,9 +88,8 @@ server <- function(input, output) {
     coordinates(map_data) <- ~ longitude + latitude
     proj4string(map_data) <- "+init=epsg:4326"
 
-    m <- mapview(map_data, zcol = grouping_var_text, burst = TRUE, homebutton = FALSE,
-                 legend.opacity = 0.1, cex = 2, alpha = 0.5, alpha.regions = 0.5, 
-                 map.types = "OpenStreetMap")
+    m <- mapview(map_data, zcol = as.character(grouping_var()), burst = TRUE, homebutton = FALSE,
+                 cex = 2, alpha = 0.5, alpha.regions = 0.5, map.types = "OpenStreetMap")
     
     m@map %>% setView(center_coordinates[1], center_coordinates[2], zoom = 5)
     
