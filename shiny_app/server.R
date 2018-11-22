@@ -2,6 +2,10 @@ server <- function(input, output) {
   
   filtered_data <- reactive({
     data <- accident_data
+    
+    if(!is.null(input$num_vehicles)) {
+      data <- data %>% filter(num_vehicles %in% input$num_vehicles)
+    }
 
     if(!is.null(input$num_casualties)) {
       data <- data %>% filter(num_casualties %in% input$num_casualties)
@@ -11,9 +15,19 @@ server <- function(input, output) {
       data <- data %>% filter(accident_severity %in% input$accident_severity)
     }
     
-    if(!is.null(input$road_type)) {
-      data <- data %>% filter(road_type %in% input$road_type)
+    if(!is.null(input$police_department)) {
+      data <- data %>% filter(police_department %in% input$police_department)
     }
+    
+    if(!is.null(input$police_attended)) {
+      data <- data %>% filter(police_attended %in% input$police_attended)
+    }
+    
+    if(!is.null(input$urban_vs_rural )) {
+      data <- data %>% filter(urban_vs_rural  %in% input$urban_vs_rural )
+    }
+    
+    data
     
   })
   
