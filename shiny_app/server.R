@@ -71,10 +71,6 @@ server <- function(input, output) {
         ))
   })
   
-  # output$tabulka <- renderDataTable({
-  #   summary(cars)
-  # })
-  
   output$accident_map <- renderLeaflet({
     
     grouping_var_text <- input$grouping_var
@@ -91,9 +87,12 @@ server <- function(input, output) {
     
     coordinates(map_data) <- ~ longitude + latitude
     proj4string(map_data) <- "+init=epsg:4326"
+
+    m <- mapview(map_data, zcol = grouping_var_text, burst = TRUE, homebutton = FALSE,
+                 legend.opacity = 0.1, cex = 2, alpha = 0.5, alpha.regions = 0.5, 
+                 map.types = "OpenStreetMap")
     
-    m <- mapview(map_data, zcol = grouping_var_text, burst = TRUE, cex = 2, alpha = 0.5, alpha.regions = 0.5)
-    m@map %>% setView(center_coordinates[1], center_coordinates[2], zoom = 6)
+    m@map %>% setView(center_coordinates[1], center_coordinates[2], zoom = 5)
     
   })
   
