@@ -29,18 +29,18 @@ dashboardPage(
             fluidRow(
               column(
                 width = 7,
-                box(title = "Obraztek krasny", status = "primary", width = NULL, plotlyOutput("plotly_chart"))
+                box(title = "Obraztek krasny", status = "primary", width = NULL, collapsible = TRUE, plotlyOutput("plotly_chart"))
               ),
               column(
                 width = 5,
-                box(title = "Mapka jukej", width = NULL, leafletOutput("accident_map"))
+                box(title = "Mapka jukej", status = "primary", width = NULL, collapsible = TRUE, leafletOutput("accident_map"))
               )),
             fluidRow(
               column(
-                width = 12,
+                width = 7,
                 box(title = "Tabulecka este krajsia", status = "primary", width = NULL, DT::dataTableOutput("data_filtered_table"))
               )
-            )
+              )
     )
   )
 )
