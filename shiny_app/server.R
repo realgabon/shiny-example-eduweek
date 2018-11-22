@@ -49,19 +49,16 @@ server <- function(input, output) {
     
   })
   
-  data_filtered_grouped <- reactive({
-
-    #group_column_text <- input$dummy_grouping_field
-    #group_column_expr <- parse_expr(group_column_text)
-      
-    var_enq <- rlang::sym(as_string(input$grouping_var))
+  output$data_filtered_table <- renderDataTable({
+ req(input$grouping_var)
+    var_enq1 <- rlang::sym(as_string(input$grouping_var))
     
     tmp <- filtered_data() %>% 
- 
-      group_by(!!var_enq) %>%
+      group_by(!!var_enq1) %>%
       summarize(countx = n(), avg = mean(accident_damages))
-
-    data
+    
+    datatable(tmp, options = list(dom = 't'), colnames = c('Group Variable', 'Counts', 'Mean'))
+    
   })
   # 
   # data_filtered_grouped <- reactive({
@@ -84,9 +81,9 @@ server <- function(input, output) {
   #   data_filtered_grouped() %>% nieco_co_vie_len_janka()
   # })
   
-  output$obraztek <- renderPlot({
-    plot(pressure)
-  })
+  # output$obraztek <- renderPlot({
+  #   plot(pressure)
+  # })
 
   output$plotly_chart <- renderPlotly({
     
@@ -128,9 +125,9 @@ server <- function(input, output) {
         ))
   })
   
-  output$tabulka <- renderDataTable({
-    summary(cars)
-  })
+  # output$tabulka <- renderDataTable({
+  #   summary(cars)
+  # })
   
   output$accident_map <- renderLeaflet({
     

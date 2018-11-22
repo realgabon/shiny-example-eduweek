@@ -21,7 +21,7 @@ dashboardPage(
         "Grouping",
         tabName = "grouping",
         startExpanded = TRUE,
-        icon = icon("filter"),
+        icon = icon("layer-group"),
         selectInput("grouping_var", "Grouping column", choices = grouping_columns)
       ),
       width = 240
@@ -36,7 +36,7 @@ dashboardPage(
             fluidRow(
               column(
                 width = 6,
-                box(title = "Tabulecka este krajsia", status = "primary", width = NULL, DT::dataTableOutput("tabulka"))
+                box(title = "Tabulecka este krajsia", status = "primary", width = NULL, DT::dataTableOutput("data_filtered_table"))
               ),
               column(
                 width = 6,
