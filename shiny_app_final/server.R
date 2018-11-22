@@ -29,7 +29,7 @@ server <- function(input, output) {
     
     filtered_data() %>% 
       group_by(!!grouping_var()) %>%
-      summarize(countx = n(), avg = mean(accident_damages))
+      summarize(countx = n(), avg = round(mean(accident_damages),2))
   
   })
   
@@ -43,36 +43,34 @@ server <- function(input, output) {
   
   output$plotly_chart <- renderPlotly({
     
-    chart_bl <- grouped_data() %>% 
-      plot_ly(x = ~eval_tidy(grouping_var()), y = ~countx, name = 'count', type= 'bar',color = I("#A00606") ) %>%
+    tmp <- filtered_data() %>% 
+      group_by(!!grouping_var()) %>%
+      summarize(countx = n(), avg = round(mean(accident_damages),2))
+    
+    chart_bl <- plot_ly(tmp,x = ~eval_tidy(grouping_var()), y = ~countx, name = 'count', type= 'bar',color = I("#A00606")) %>%
       add_lines(y = ~avg, name = 'damages',  type= 'line', line = list(color = "#052F66"),yaxis = "y2") %>%
-
-       layout(
+      
+      layout(
         xaxis = list(
-          title=  input$grouping_var,
-          anchor = "bottom"
+          title=  input$grouping_var
         ),
         yaxis = list(
-          title=  "damages",
-          side = "left",
-          hoverformat = ',.'
+          title=  "Frequency",
+          side = "left"
         ),
         yaxis2 = list(
-          title=  "count",
+          title=  "Average Damage",
           side = "right",
           overlaying = "y",
-          tickfont = list(size = 9.5)
-
+          hoverformat = ',.'
+          
         ),
+         margin = list(r=110,
+                       t=110),
         title = "WHAT IS THIS?",
-        margin = list(
-          l = 65,
-          r = 65,
-          t = 115,
-          pad = 4
-        ),
-        legend = list(orientation = "h", yanchor = "top", borderwidth = 0,y=-0.75
-
+        
+        legend = list(orientation = "h",  y=-1, x=0.25
+                      
         ))
   })
   
