@@ -3,20 +3,8 @@ server <- function(input, output) {
   filtered_data <- reactive({
     data <- accident_data
     
-    if(!is.null(input$num_vehicles)) {
-      data <- data %>% filter(num_vehicles %in% input$num_vehicles)
-    }
-
-    if(!is.null(input$num_casualties)) {
-      data <- data %>% filter(num_casualties %in% input$num_casualties)
-    }
-    
     if(!is.null(input$accident_severity)) {
       data <- data %>% filter(accident_severity %in% input$accident_severity)
-    }
-    
-    if(!is.null(input$police_department)) {
-      data <- data %>% filter(police_department %in% input$police_department)
     }
     
     if(!is.null(input$police_attended)) {
@@ -31,28 +19,7 @@ server <- function(input, output) {
     
   })
   
-
-  col_names <- reactive({
-    
-    filtered_data() %>% select(
-      weekday,
-      road_type
-    ) %>% names
-  })
-  
-   
-  
-  output$grouping_var <- renderUI({
-    
-    selectInput("grouping_var", label = h3("Select Groups to plot"), 
-                choices = col_names())
-    
-  })
-  
   data_filtered_grouped <- reactive({
-
-    #group_column_text <- input$dummy_grouping_field
-    #group_column_expr <- parse_expr(group_column_text)
       
     var_enq <- rlang::sym(as_string(input$grouping_var))
     
@@ -63,26 +30,6 @@ server <- function(input, output) {
 
     data
   })
-  # 
-  # data_filtered_grouped <- reactive({
-  # 
-  #   group_column_text <- input$dummy_grouping_field
-  #   group_column_expr <- parse_expr(group_column_text)
-  # 
-  #   filtered_data() %>%
-  #     group_by(!!grouping_column) %>%
-  #     summarize(count = n(), avg = mean(!!grouping_column))
-  # 
-  # })
-  # 
-  # output$data_table_server <- DT::renderDataTable({
-  #   data_filtered_grouped() %>%
-  #     datatable()
-  # })
-  # 
-  # output$plotly_chart <- renderplotly({
-  #   data_filtered_grouped() %>% nieco_co_vie_len_janka()
-  # })
   
   output$obraztek <- renderPlot({
     plot(pressure)
@@ -90,7 +37,7 @@ server <- function(input, output) {
 
   output$plotly_chart <- renderPlotly({
     
-    var_enq1 <- rlang::sym(as_string(input$grouping_var))
+    var_enq1 <- sym(as_string(input$grouping_var))
     
     tmp <- filtered_data() %>% 
       group_by(!!var_enq1) %>%
@@ -134,16 +81,12 @@ server <- function(input, output) {
   
   output$accident_map <- renderLeaflet({
     
-    # group_column_text <- input$dummy_grouping_field
-    # group_column_expr <- parse_expr(group_column_text)
+    grouping_var_text <- input$grouping_var
+    grouping_var <- sym(as_string(grouping_var_text))
     
-    # map_data <- data_filtered() %>% 
-    #   select(longitude, latitude, !!group_column_expr) %>% 
-    #   filter(complete.cases(longitude, latitude, !!group_column_expr))
-    
-    map_data <- accident_data %>% 
-      select(longitude, latitude) %>% 
-      filter(complete.cases(longitude, latitude))
+    map_data <- filtered_data() %>%
+      select(longitude, latitude, !!grouping_var) %>%
+      filter(complete.cases(longitude, latitude, !!grouping_var))
     
     longitude_center <- mean(map_data[, 1])
     latitude_center <- mean(map_data[, 2]) + 1
@@ -153,8 +96,7 @@ server <- function(input, output) {
     coordinates(map_data) <- ~ longitude + latitude
     proj4string(map_data) <- "+init=epsg:4326"
     
-    m <- mapview(map_data, cex = 2, alpha = 0.5, alpha.regions = 0.5)
-    # m <- mapview(map_data, zcol = group_column_text, burst = TRUE, cex = 2, alpha = 0.5, alpha.regions = 0.5)
+    m <- mapview(map_data, zcol = grouping_var_text, burst = TRUE, cex = 2, alpha = 0.5, alpha.regions = 0.5)
     m@map %>% setView(center_coordinates[1], center_coordinates[2], zoom = 6)
     
   })

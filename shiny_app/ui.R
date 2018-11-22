@@ -10,10 +10,7 @@ dashboardPage(
         tabName = "filters",
         icon = icon("filter"),
         startExpanded = TRUE,
-        selectInput("num_vehicles", "Number of Vehicles", choices = unique(accident_data$num_vehicles)),
-        selectInput("num_casualties", "Number of Casualties", choices = unique(accident_data$num_casualties)),
         selectInput("accident_severity", "Accident Severity", choices = unique(accident_data$accident_severity)),
-        selectInput("police_department", "Police Department", choices = unique(accident_data$police_department)),
         selectInput("police_attended", "Police Attended", choices = unique(accident_data$police_attended)),
         selectInput("urban_vs_rural", "Urban/Rural", choices = unique(accident_data$urban_vs_rural))
       ),
