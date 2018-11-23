@@ -21,7 +21,7 @@ server <- function(input, output) {
   
   grouping_var <- reactive({
     
-    sym(as_string(input$grouping_var))
+    as.symbol(input$grouping_var)
   
   })
   
@@ -43,11 +43,7 @@ server <- function(input, output) {
   
   output$plotly_chart <- renderPlotly({
     
-    tmp <- filtered_data() %>% 
-      group_by(!!grouping_var()) %>%
-      summarize(countx = n(), avg = round(mean(accident_damages),2))
-    
-    chart_bl <- plot_ly(tmp,x = ~eval_tidy(grouping_var()), y = ~countx, name = 'count', type= 'bar',color = I("#A00606")) %>%
+    chart_bl <-  plot_ly(grouped_data(),x = ~eval_tidy(grouping_var()), y = ~countx, name = 'count', type= 'bar',color = I("#A00606")) %>%
       add_lines(y = ~avg, name = 'damages',  type= 'line', line = list(color = "#052F66"),yaxis = "y2") %>%
       
       layout(
@@ -82,8 +78,10 @@ server <- function(input, output) {
     coordinates(map_data) <- ~ longitude + latitude
     proj4string(map_data) <- "+init=epsg:4326"
 
+    maps <- c("OpenStreetMap", "Esri.WorldImagery")
+    
     m <- mapview(map_data, zcol = as.character(grouping_var()), burst = TRUE, homebutton = FALSE,
-                 cex = 2, alpha = 0.5, alpha.regions = 0.5, map.types = "OpenStreetMap")
+                 cex = 2, alpha = 0.5, alpha.regions = 0.5, map.types = maps)
     
     m@map %>% setView(center_coordinates[1], center_coordinates[2], zoom = 5)
     
