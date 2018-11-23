@@ -86,8 +86,10 @@ server <- function(input, output) {
     coordinates(map_data) <- ~ longitude + latitude
     proj4string(map_data) <- "+init=epsg:4326"
 
+    maps <- c("OpenStreetMap", "Esri.WorldImagery")
+    
     m <- mapview(map_data, zcol = as.character(grouping_var()), burst = TRUE, homebutton = FALSE,
-                 cex = 2, alpha = 0.5, alpha.regions = 0.5, map.types = "OpenStreetMap")
+                 cex = 2, alpha = 0.5, alpha.regions = 0.5, map.types = maps)
     
     m@map %>% setView(center_coordinates[1], center_coordinates[2], zoom = 5)
     

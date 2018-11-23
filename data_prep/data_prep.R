@@ -84,6 +84,15 @@ accidents_processed <- accidents_sampled %>%
   mutate(year = year(dmy(date)),
          weekday = as.character(wday(dmy(date), label = TRUE, abbr = FALSE)),
          hour = hour(time)) %>% 
+  mutate(weekday = case_when(
+    .$weekday == "Monday" ~ "1-Monday",
+    .$weekday == "Tuesday" ~ "2-Tuesday",
+    .$weekday == "Wednesday" ~ "3-Wednesday",
+    .$weekday == "Thursday" ~ "4-Thursday",
+    .$weekday == "Friday" ~ "5-Friday",
+    .$weekday == "Saturday" ~ "6-Saturday",
+    .$weekday == "Sunday" ~ "7-Sunday"
+  )) %>% 
   mutate(accident_damages = case_when(
     .$accident_severity == "Slight" ~ sample(x = 1:1000, size = n(), replace = TRUE),
     .$accident_severity == "Serious" ~ sample(x = 1001:10000, size = n(), replace = TRUE),
