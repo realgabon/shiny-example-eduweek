@@ -1,6 +1,6 @@
 # nieco co vie len miso
 dashboardPage(
-  dashboardHeader(title = "One visualiasation"),
+  dashboardHeader(title = "UK Car Accidents"),
   dashboardSidebar(
     sidebarMenu(
       # it s crucial to name sidebar menu
@@ -23,8 +23,7 @@ dashboardPage(
         startExpanded = TRUE,
         icon = icon("layer-group"),
         selectInput("grouping_var", "Grouping column", choices = grouping_columns)
-      ),
-      width = 240
+      )
     )
   ),
   dashboardBody(
