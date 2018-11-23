@@ -29,7 +29,7 @@ accidents_full <- read_csv("data_prep/full_data/Accidents0515.csv")
 # casualties_full <- read_csv("data_prep/full_data/Casualties0515.csv")
 # vehicles_full <- read_csv("data_prep/full_data/Vehicles0515.csv")
 
-accidents_sampled <- accidents_full %>% sample_n(size = 10000)
+accidents_sampled <- accidents_full %>% sample_n(size = 11000)
 # casualties_sampled <- casualties_full %>% inner_join(accidents_sampled, by = c("Accident_Index"))
 # vehicles_sampled <- vehicles_full %>% inner_join(accidents_sampled, by = c("Accident_Index"))
 
@@ -129,8 +129,9 @@ accidents_processed <- accidents_sampled %>%
          longitude,
          latitude
          ) %>% 
-  filter(complete.cases(.)) %>% 
+  filter(complete.cases(.)) %>%
+  sample_n(size = 10000) %>% 
   as.data.frame()
 
-write_rds(accidents_processed, "shiny_app_final/accidents_processed.rds", compress = "bz2")
-write_rds(accidents_processed, "shiny_app_start/accidents_processed.rds", compress = "bz2")
+write_csv(accidents_processed, "shiny_app_motivation/accidents.csv")
+write_csv(accidents_processed, "shiny_app_start/accidents.csv")
