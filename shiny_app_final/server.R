@@ -65,13 +65,9 @@ server <- function(input, output) {
           hoverformat = ',.'
           
         ),
-         margin = list(r=110,
-                       t=110),
-        title = "WHAT IS THIS?",
-        
-        legend = list(orientation = "h",  y=-1, x=0.25
-                      
-        ))
+         margin = list(r=77),
+         legend = list(orientation = "h",  y=-0.5, x=0.3)
+    )
   })
   
   output$accident_map <- renderLeaflet({
