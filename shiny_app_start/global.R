@@ -1,19 +1,15 @@
 # loading libraries
-library(shiny)
-library(mapview)
-library(leaflet)
-library(DT)
 library(readr)
-library(rlang)
 library(dplyr)
 library(plotly)
-library(shinydashboard)
-library(shinyWidgets)
-library(shinycssloaders)
+library(mapview)
+library(leaflet)
 library(sp)
+library(rlang)
+library(shinydashboard)
 
 # loading data
-accident_data <- read_csv("accidents.csv")
+accidents <- read_csv("accidents.csv")
 
 # grouping var choices
 grouping_columns <- c("road_type", 

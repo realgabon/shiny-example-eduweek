@@ -36,13 +36,7 @@ dashboardPage(
               column(
                 width = 5,
                 box(title = "Accident Location", status = "primary", width = NULL, collapsible = TRUE, leafletOutput("accident_map"))
-              )),
-            fluidRow(
-              column(
-                width = 7,
-                box(title = "Accident Summary Table", status = "primary", width = NULL, DT::dataTableOutput("grouped_table"))
-              )
-              )
+              ))
     )
   )
 )

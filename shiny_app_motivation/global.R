@@ -1,20 +1,15 @@
 
 # doplnit kniznice
-
-library(shiny)
-library(mapview)
-library(leaflet)
-library(DT)
 library(readr)
-library(rlang)
 library(dplyr)
 library(plotly)
-library(shinydashboard)
-library(shinyWidgets)
-library(shinycssloaders)
+library(mapview)
+library(leaflet)
 library(sp)
+library(rlang)
+library(shinydashboard)
 
-accident_data <- read_csv("accidents.csv")
+accidents <- read_csv("accidents.csv")
 
 grouping_columns <- c("road_type", 
                       "road_conditions", 

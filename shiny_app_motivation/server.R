@@ -1,7 +1,7 @@
 server <- function(input, output) {
   
   filtered_data <- reactive({
-    data <- accident_data
+    data <- accidents
     
     if(!is.null(input$accident_severity)) {
       data <- data %>% filter(accident_severity %in% input$accident_severity)
@@ -20,9 +20,7 @@ server <- function(input, output) {
   })
   
   grouping_var <- reactive({
-    
     as.symbol(input$grouping_var)
-  
   })
   
   grouped_data <- reactive({
@@ -30,14 +28,6 @@ server <- function(input, output) {
     filtered_data() %>% 
       group_by(!!grouping_var()) %>%
       summarize(countx = n(), avg = round(mean(accident_damages),2))
-  
-  })
-  
-  
-  output$grouped_table <- renderDataTable({
-    
-    grouped_data() %>% 
-      datatable(options = list(dom = 't'), colnames = c('Group Variable', 'Counts', 'Mean'))
   
   })
   
@@ -70,9 +60,8 @@ server <- function(input, output) {
     map_data <- filtered_data() %>%
       select(longitude, latitude, !!grouping_var())
     
-    longitude_center <- mean(map_data[, 1])
-    latitude_center <- mean(map_data[, 2]) + 1
-    
+    longitude_center <- mean(map_data$longitude)
+    latitude_center <- mean(map_data$latitude)
     center_coordinates <- c(longitude_center, latitude_center)
     
     coordinates(map_data) <- ~ longitude + latitude
@@ -80,8 +69,8 @@ server <- function(input, output) {
 
     maps <- c("OpenStreetMap", "Esri.WorldImagery")
     
-    m <- mapview(map_data, zcol = as.character(grouping_var()), burst = TRUE, homebutton = FALSE,
-                 cex = 2, alpha = 0.5, alpha.regions = 0.5, map.types = maps)
+    zcol_text <- as.character(grouping_var())
+    m <- mapview(map_data, map.types = maps, cex = 3, zcol = zcol_text, burst = TRUE, homebutton = FALSE)
     
     m@map %>% setView(center_coordinates[1], center_coordinates[2], zoom = 5)
     
