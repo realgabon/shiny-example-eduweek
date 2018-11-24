@@ -27,10 +27,10 @@ accidents_agg %>%
 ## phase 3
 
 accidents_agg %>% 
-  plot_ly(x = ~day, y = ~frequency, type = "bar", name = "frequency", color = I("#A00606")) %>% 
-  add_lines(y = ~avg_dmg, type = "line", yaxis = "y2", name = "average damage", line = list(color = "#052F66")) %>% 
+  plot_ly(x = ~hour, y = ~frequency, type = "bar", name = "frequency", color = I("#A00606")) %>% 
+  add_lines(y = ~average, type = "line", yaxis = "y2", name = "average damage", line = list(color = "#052F66")) %>% 
   layout(
-    xaxis = list(title = "weekday"),
+    xaxis = list(title = "hour"),
     yaxis = list(side = "left", title = "frequency"),
     yaxis2 = list(side = "right", overlaying = "y", title = "damage in $"))
 

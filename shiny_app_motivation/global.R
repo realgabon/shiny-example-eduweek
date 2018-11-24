@@ -14,7 +14,7 @@ library(shinyWidgets)
 library(shinycssloaders)
 library(sp)
 
-accident_data <- read_rds("accidents_processed.rds")
+accident_data <- read_csv("accidents.csv")
 
 grouping_columns <- c("road_type", 
                       "road_conditions", 

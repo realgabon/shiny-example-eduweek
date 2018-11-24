@@ -13,7 +13,7 @@ library(shinycssloaders)
 library(sp)
 
 # loading data
-accident_data <- read_rds("accidents_processed.rds")
+accident_data <- read_csv("accidents.csv")
 
 # grouping var choices
 grouping_columns <- c("road_type", 
