@@ -26,11 +26,13 @@ proj4string(accidents_points) <- "+init=epsg:4326"
 maps <- c("OpenStreetMap", "Esri.WorldImagery")
 
 # map 1 - create map of points
-mapview(accidents_points, map.types = maps, cex = 3)
+m1 <- mapview(accidents_points, map.types = maps, cex = 3)
+m1@map
 
 # map 2 - include hour into map
-mapview(accidents_points, map.types = maps, cex = 3, zcol = "hour", burst = TRUE)
+m2 <- mapview(accidents_points, map.types = maps, cex = 3, zcol = "hour", burst = TRUE)
+m2@map
 
 # map 3 - optional, center the view with computed coordinate center
-m <- mapview(accidents_points, map.types = maps, cex = 3, zcol = "hour", burst = TRUE)
-m@map %>% setView(center_coordinates[1], center_coordinates[2], zoom = 6)
+m3 <- mapview(accidents_points, map.types = maps, cex = 3, zcol = "hour", burst = TRUE)
+m3@map %>% setView(center_coordinates[1], center_coordinates[2], zoom = 6)
