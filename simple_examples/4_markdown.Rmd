@@ -7,8 +7,16 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+
 # read data
+library(readr)
+library(dplyr)
+library(plotly)
+library(mapview)
+library(sp)
+library(leaflet)
+
 accidents <- read_csv("accidents.csv")
 
 # run code below to save your knitted Markdown document
@@ -21,8 +29,6 @@ You can write something useful here or between every chunk of r code.
 We have some fancy plot we created before right under this text.
 
 ```{r cars, echo=FALSE, fig.align='center'}
-library(dplyr)
-
 # aggregate data
 accidents_agg <- accidents %>% 
   group_by(hour) %>% 
@@ -43,11 +49,6 @@ accidents_agg %>%
 Or you can draw map from previous step here:
 
 ```{r accidents_agg, echo=FALSE, fig.align='center'}
-library(readr)
-library(dplyr)
-library(mapview)
-library(sp)
-library(leaflet)
 
 accidents_points <- 
   accidents %>%

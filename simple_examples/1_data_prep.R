@@ -2,7 +2,7 @@ library(readr)
 library(dplyr)
 
 # read and inspect
-accidents <- read_csv("shiny_app_start/accidents.csv")
+accidents <- read_csv("simple_examples/accidents.csv")
 
 accidents %>% colnames()
 accidents %>% head()

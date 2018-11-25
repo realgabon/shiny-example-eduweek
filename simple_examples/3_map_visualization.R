@@ -5,7 +5,7 @@ library(sp)
 library(leaflet)
 
 # read data
-accidents <- read_csv("shiny_app_start/accidents.csv")
+accidents <- read_csv("simple_examples/accidents.csv")
 
 # process data
 accidents_points <- 
