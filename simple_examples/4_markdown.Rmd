@@ -1,30 +1,74 @@
+
 ---
 title: "UK Accidents"
 author: "Batman"
-date: "November 23, 2018"
+date: "November 26, 2018"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# read data
+accidents <- read_csv("accidents.csv")
+
+# run code below to save your knitted Markdown document
+# rmarkdown::render("simple_examples/4_markdown.Rmd")
 ```
 
-## R Markdown
+## UK Accident 2005-2015
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+You can write something useful here or between every chunk of r code.
+We have some fancy plot we created before right under this text.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r cars, echo=FALSE, fig.align='center'}
+library(dplyr)
 
-```{r cars}
-summary(cars)
+# aggregate data
+accidents_agg <- accidents %>% 
+  group_by(hour) %>% 
+  summarize(frequency = n(), average = mean(accident_damages))
+
+accidents_agg %>% 
+  plot_ly(x = ~hour, y = ~frequency, type = "bar", name = "frequency", color = I("#A00606")) %>% 
+  add_lines(y = ~average, type = "line", yaxis = "y2", name = "average damage", line = list(color = "#052F66")) %>% 
+  layout(
+    xaxis = list(title = "hour"),
+    yaxis = list(side = "left", title = "frequency"),
+    yaxis2 = list(side = "right", overlaying = "y", title = "damage in $"))
+
 ```
 
-## Including Plots
+## Fancy Maps:
 
-You can also embed plots, for example:
+Or you can draw map from previous step here:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r accidents_agg, echo=FALSE, fig.align='center'}
+library(readr)
+library(dplyr)
+library(mapview)
+library(sp)
+library(leaflet)
+
+accidents_points <- 
+  accidents %>%
+  filter(accident_severity == "Fatal") %>% 
+  select(longitude, latitude, hour)
+
+# optional - compute center coordinates
+longitude_center <- mean(accidents_points$longitude)
+latitude_center <- mean(accidents_points$latitude)
+center_coordinates <- c(longitude_center, latitude_center)
+
+# define which columns are used for location
+coordinates(accidents_points) <- ~ longitude + latitude
+proj4string(accidents_points) <- "+init=epsg:4326"
+
+# choose maps
+maps <- c("OpenStreetMap", "Esri.WorldImagery")
+
+# map 3 - optional, center the view with computed coordinate center
+m3 <- mapview(accidents_points, map.types = maps, cex = 3, zcol = "hour", burst = TRUE)
+m3@map %>% setView(center_coordinates[1], center_coordinates[2], zoom = 6)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
