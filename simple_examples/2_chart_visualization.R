@@ -32,7 +32,9 @@ accidents_agg %>%
   layout(
     xaxis = list(title = "hour"),
     yaxis = list(side = "left", title = "frequency"),
-    yaxis2 = list(side = "right", overlaying = "y", title = "damage in $"))
+    yaxis2 = list(side = "right", overlaying = "y", title = "damage in $"),
+    margin = list(r = 77),
+    legend = list(orientation = "h", y = -0.5, x = 0.3))
 
 
 # more charts at https://plot.ly/r/#basic-charts
